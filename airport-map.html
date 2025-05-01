@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Airport Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0" />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 5,
+          center: { lat: 39.8283, lng: -98.5795 }, // Center of the U.S.
+        });
+
+        // Load your GeoJSON data hosted on GitHub (RAW link)
+        map.data.loadGeoJson('https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO_NAME/main/airports.geojson');
+
+        // Optional styling of pins
+        map.data.setStyle({
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            fillColor: "#FF0000",
+            fillOpacity: 0.8,
+            strokeWeight: 1,
+          },
+        });
+
+        // Show airport name on hover
+        map.data.addListener('mouseover', function(event) {
+          map.data.overrideStyle(event.feature, {
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 6,
+              fillColor: "#00FF00",
+              fillOpacity: 1.0,
+              strokeWeight: 2,
+            },
+          });
+        });
+
+        map.data.addListener('mouseout', function(event) {
+          map.data.revertStyle();
+        });
+
+        map.data.addListener('click', function(event) {
+          const name = event.feature.getProperty("name");
+          const code = event.feature.getProperty("icao") || "N/A";
+          alert(`Airport: ${name}\nICAO: ${code}`);
+        });
+      }
+
+      window.onload = initMap;
+    </script>
+  </body>
+</html>
